@@ -53,6 +53,17 @@ devDependencies
 
 + 环境需要的包
 
+
+## 参考资料
+
++ [阮一峰react学习](http://www.ruanyifeng.com/blog/javascript/)
++ [redux视频教学](https://egghead.io/courses/getting-started-with-redux )
++ [redux文档](http://redux.js.org/)
++ [react-router](https://reacttraining.com/react-router/)
+
++  其他自行google，baidu
+
+
 # TODO
 
 继续集成环境
