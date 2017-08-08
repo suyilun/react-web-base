@@ -12,7 +12,7 @@ osx: npm run webpack-dev-osx
 win: npm run webpack-dev-win
     
 ```
-
+当前使用是route 中的hashHistory，url中使用#link来跳转相应界面
 
 # TODO
 
