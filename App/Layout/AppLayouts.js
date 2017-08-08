@@ -1,18 +1,19 @@
 import {Route} from 'react-router-dom'
 
+//默认头，底样式，待补充
 const DefaultLayout = ({component: Component, ...rest}) => {
     return (
         <Route {...rest} render={matchProps => (
             <div className="DefaultLayout">
-                <div className="Header">Header</div>
+                <div className="Header">详见AppLayout------Header</div>
                 <Component {...matchProps} />
-                <div className="Footer">Footer</div>
+                <div className="Footer">详见AppLayout------Footer</div>
             </div>
         )}/>
     )
 };
 
-//左右布局
+//左右布局,具体样式待补充
 const PostLayout = ({component: Component, ...rest}) => {
     return (
         <DefaultLayout {...rest} component={matchProps => (

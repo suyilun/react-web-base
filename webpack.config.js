@@ -81,7 +81,8 @@ if (process.env.NODE_ENV == "develop") {
             plugins: [
                 "transform-object-rest-spread",
                 "transform-es2015-arrow-functions",
-                "transform-object-assign"]
+                "transform-object-assign",
+                "es6-promise"]
         }
     });
 } else {
@@ -94,9 +95,11 @@ if (process.env.NODE_ENV == "develop") {
         query: {
             compact: false,
             presets: ["react", "es2015", "stage-2"],
-            plugins: ["transform-object-rest-spread",
+            plugins: [
+                "transform-object-rest-spread",
                 "transform-es2015-arrow-functions",
                 "transform-object-assign",
+                "es6-promise",
                 ["import", [{
                     "libraryName": "antd",
                     "style": true
