@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <style type="text/css">
+        .flex {
+            width: 350px;
+            height: 200px;
+            border: 1px solid #555;
+            font: 14px Arial;
+
+            display: -webkit-flex;
+            -webkit-flex-direction: row;
+
+            display: flex;
+            flex-direction: row;
+        }
+
+        .flex > div {
+            -webkit-flex: 1 1 auto;
+            flext: 1 1 auto;
+            width: 30px;
+
+            -webkit-transition: width 0.5s ease-out;
+            transition: width 0.5s ease-out;
+        }
+
+        .flex > div:nth-child(1) {
+            background: #009246;
+        }
+
+        .flex > div:nth-child(2) {
+            background: #f1f2f1;
+        }
+
+        .flex > div:nth-child(3) {
+            background: #ce2b37;
+        }
+
+        .flex > div:hover {
+            width: 200px;
+        }
+    </style>
+
+</head>
+<body>
+<div class="flex">
+    <div>uno</div>
+    <div>due</div>
+    <div>tre</div>
+</div>
+</body>
+</html>
