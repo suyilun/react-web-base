@@ -4,14 +4,15 @@ const DefaultLayout = ({component: Component, ...rest}) => {
     return (
         <Route {...rest} render={matchProps => (
             <div className="DefaultLayout">
-                <div className="Header">Header1111</div>
+                <div className="Header">Header</div>
                 <Component {...matchProps} />
-                <div className="Footer">Footer222</div>
+                <div className="Footer">Footer</div>
             </div>
         )}/>
     )
 };
 
+//左右布局
 const PostLayout = ({component: Component, ...rest}) => {
     return (
         <DefaultLayout {...rest} component={matchProps => (
@@ -27,17 +28,10 @@ const PostLayout = ({component: Component, ...rest}) => {
     );
 };
 
-const DefaultIndexLayout = ({component: Component, ...rest}) => {
-    return (
-        <Route {...rest} render={ matchProps => (
-            <Component  {...matchProps} />
-        )}/>
-    )
-}
-
+//单一布局
 const IndexLayout = ({component: Component, ...rest}) => {
     return (
-        <DefaultIndexLayout {...rest} component={matchProps => (
+        <DefaultLayout {...rest} component={matchProps => (
             <div className="Index">
                 <div className="Index-content">
                     <Component {...matchProps} />
