@@ -1,12 +1,12 @@
 // import { Route} from 'react-router';
 import {HashRouter as Router, BrowserRouter, Switch, Link, Route, Redirect} from 'react-router-dom';
 import {PostLayout, IndexLayout} from "../Layout/AppLayouts";
-import {Home} from "../Component/Home/Home";
+import Home from "../Component/Home/Home";
 import React from 'react';
 
 //类似frame模板
 const FrameRouter = () => (
-    <Router forceRefresh={false}>
+    <Router>
         <Switch>
             <IndexLayout exact path='/' component={Home}/>
             <PostLayout path="/home" component={Home}/>

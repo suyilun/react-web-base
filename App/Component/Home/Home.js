@@ -1,24 +1,50 @@
 import {Map, List} from 'immutable';
-import {createStore} from 'redux';
+// import {createStore} from 'redux';
+import {connect, Provider} from 'react-redux'
 import React from 'react';
 
-// export default class Home extends React.Component {
-//     constructor(props) {
-//         super(props);
-//     }
-//
-//     render() {
-//         return (<div>Home</div>)
-//     }
-// }
+const Counter = ({value, onIncrement, onDecrement}) => (
+    <div>
+        {value}
+        <button onClick={onIncrement}>+</button>
+        <button onClick={onDecrement}>-</button>
+    </div>
+);
 
-//
-const Home = ({}) => (<div>Hello</div>);
 
-const addCounter = (state = 0, action) => {
-    switch (action.type) {
-        
+class Home extends React.Component {
+    constructor(props) {
+        super(props);
+    }
+
+    componentDidMount() {
+        //let {dispatch} = this.props
+    }
+
+    render() {
+        console.log(this.props)
+        let {dispatch, count} = this.props
+        return (
+            <div>
+                Hello,Home
+                <Counter
+                    value={count}
+                    onIncrement={
+                        () => {
+                            dispatch({type: 'INCREMENT'})
+                        }
+                    }
+                    onDecrement={
+                        () => {
+                            dispatch({type: 'DECREMENT'})
+                        }
+                    }/>
+            </div>
+        );
     }
 }
 
-module.exports = {Home};
+export default connect(
+    (state) => (state)
+)(Home)
+
