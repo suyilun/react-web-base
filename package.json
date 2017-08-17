@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "webpack-watch": "webpack --watch",
     "webpack-dev-osx": "export NODE_ENV=develop;webpack-dev-server -d --p  --progress --hot --color --inline --profile  --content-base build/ --port 9999",
-    "webpack-dev-win": "set NODE_ENV=develop;webpack-dev-server -d --p  --progress --hot --color --inline --profile  --content-base build/ --port 9999",
+    "webpack-dev-win": "set NODE_ENV=develo&webpack-dev-server -d --p  --progress --hot --color --inline --profile  --content-base build/ --port 9999",
     "webpack-build-osx": "export NODE_ENV=production;webpack -p --progress --colors ",
     "webpack-build-win": "set NODE_ENV=production;webpack"
   },
