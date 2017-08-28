@@ -14,7 +14,6 @@ export function findUser(user) {
     }
 }
 
-
 export function fetchUser() {
     return function (dispatch) {
         return axios.get('/json/test.json', {responseType: "json"})
@@ -25,7 +24,6 @@ export function fetchUser() {
             .catch(function (error) {
                 console.log(error);
             });
-
     }
 }
 
@@ -41,4 +39,3 @@ export function removeTodo(id) {
 export function addCount() {
     return {type: ActionTypes.COUNT_INCREMENT}
 }
-
