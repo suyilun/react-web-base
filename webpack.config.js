@@ -29,7 +29,7 @@ var webpackOptions = {
     plugins: [envPlugin
         //生成 index.html 插件
         // , new HtmlwebpackPlugin({
-        //     title: 'Webpack-demos',
+        //D:\\nodeJs\\     title: 'Webpack-demos',
         //     filename: 'index.html'
         // })
         , new LodashModuleReplacementPlugin()
@@ -42,10 +42,10 @@ var webpackOptions = {
     ],
     module: {
         loaders: [
-            {test: /\.(css)$/, loaders: ['style', 'css?modules&localIdentName=[local]-[hash:base64:5]', 'less']},
-            {test: /\.(less)$/, loader: `style!css!less`},
-            {test: /\.(jpg|png)$/, loader: "url?limit=8192"},
-            {test: /\.(eot|svg|ttf|woff|woff2)\w*/, loader: "url-loader?limit=10000&mimetype=application/font-woff"}
+            {test: /\.(css)$/, loaders: ['style-loader', 'css-loader?modules&localIdentName=[local]-[hash:base64:5]', 'less-loader']},
+            {test: /\.(less)$/, loader: `style-loader!css-loader!less-loader`},
+            {test: /\.(jpg|png)$/, loader: "url-loader?limit=8192"},
+            {test: /\.(eot|svg|ttf|woff|woff2)\w*/, loader: "url-loader?limit=10000&mimetype=application/font   -woff"}
         ]
     },
     externals: {"react": "React", "react-dom": "ReactDOM", '_': 'lodash'}
@@ -71,7 +71,7 @@ if (process.env.NODE_ENV == "develop") {
             '/api/*': {host: "localhost", target: "http://localhost:10001/", secure: false, withCredentials: true, pathRewrite: {"^/api/": ''}}
         }
     }
-    webpackOptions.externals = Object.assign(webpackOptions.externals, {"antd": true, "moment": true})
+    // webpackOptions.externals = Object.assign(webpackOptions.externals, {"antd": true, "moment": true})
     webpackOptions.module.loaders.push({
         test: /\.js$/, loader: "babel-loader",
         exclude: '/node_modules/',
@@ -100,10 +100,11 @@ if (process.env.NODE_ENV == "develop") {
                 "transform-es2015-arrow-functions",
                 "transform-object-assign",
                 "es6-promise",
-                ["import", [{
-                    "libraryName": "antd",
-                    "style": true
-                }]]
+                // ["import", [{
+                //     "libraryName": "antd",
+                //     "style-loader": true
+                // }]
+                //]
             ]
         }
     });
