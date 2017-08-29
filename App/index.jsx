@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import thunkMiddleware from 'redux-thunk'
 import Reducers  from './Reducers/Reduers'
-import {FrameRouter} from "./Router/AppRouters"
+import {AdminRouter} from "./Router/AppRouters.jsx"
 import {Provider} from 'react-redux'
 import {createStore, applyMiddleware} from 'redux'
 
@@ -10,7 +10,7 @@ import {createStore, applyMiddleware} from 'redux'
 // console.log(AppRouter)
 ReactDOM.render(
     <Provider store={createStore(Reducers, applyMiddleware(thunkMiddleware))}>
-        <FrameRouter/>
+        <AdminRouter/>
     </Provider>,
     document.getElementById("app")
 );

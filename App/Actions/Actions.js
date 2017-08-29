@@ -1,5 +1,14 @@
 import ActionTypes from './ActionTypes'
 import axios from 'axios'
+
+export function resizeWindow(){
+  return {
+    type:ActionTypes.WINDOW_RESIZE_HEIGHT
+  } 
+}
+
+
+
 export function addTodo(text) {
     return {
         type: ActionTypes.ADD_TODO,
