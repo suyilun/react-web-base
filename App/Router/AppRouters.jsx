@@ -1,43 +1,33 @@
-// import { Route} from 'react-router';
-import {
-  HashRouter as Router,
-  BrowserRouter,
-  Switch,
-  Link,
-  Route,
-  Redirect
-} from 'react-router-dom';
-import {AdminLayout, IndexLayout} from "../Layout/AppLayouts.jsx";
-import Home from "../Component/Home/Home.jsx";
 import React from 'react';
+import { HashRouter as Router, Switch, Route, Redirect } from 'react-router-dom';
+import PropTypes from 'prop-types';
+import { AdminLayout, IndexLayout } from '../Layout/';
+import Home from '../Component/Home/Home';
+import Console from '../Console/Console';
 
-//类似frame模板
+const Tacos = ({ match }) => {
+  /*  eslint no-console: "error" */
+  Console.log('match ', match);
+  Console.log(' Tacos url ', match.url);
+  return (
+    <div>
+      <Redirect to="/home" />
+    </div>
+  );
+};
+
+Tacos.propTypes = { match: PropTypes.string };
+Tacos.defaultProps = { match: null };
+
+// 类似frame模板
 const AdminRouter = () => (
   <Router>
     <Switch>
-      <AdminLayout path="/home" component={Home}/>
-      <IndexLayout exact path='/' component={Home}/>
-      <Route path="/tacos" component={Tacos}/>
+      <AdminLayout path="/home" component={Home} />
+      <IndexLayout exact path="/" component={Home} />
+      <Route path="/tacos" component={Tacos} />
     </Switch>
   </Router>
-)
+);
 
-//单页模板
-const SimpleRouter = () => {
-  return (
-    <Router forceRefresh={false}></Router>
-  );
-}
-
-const Tacos = ({match}) => {
-  console.log("Tacos url ", match.url)(
-    <div>
-      <Redirect to="/home"/>
-    </div>
-  )
-}
-
-module.exports = {
-  AdminRouter,
-  SimpleRouter
-};
+module.exports = { AdminRouter };

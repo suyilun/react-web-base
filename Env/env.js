@@ -1,8 +1,5 @@
-const PRO = {
-    profile: "product",
-}
 const DEV = {
-    profile: "develop"
-}
+  profile: 'develop',
+};
 
 module.exports = DEV;
