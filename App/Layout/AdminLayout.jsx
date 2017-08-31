@@ -1,9 +1,10 @@
 import React from 'react';
 import { Route } from 'react-router-dom';
-import { Layout, Menu } from 'antd';
+import { Layout } from 'antd';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import LeftSideMenu from './LeftSideMenu';
+import AdminSideMenu from './AdminSideMenu';
+import HeaderMenu from './HeaderMenu';
 import * as Actions from '../Actions/Actions';
 
 const { Header, Content, Sider } = Layout;
@@ -55,19 +56,7 @@ class AdminLayout extends React.Component {
             <Header
               className="header"
             >
-              <div className="logo" />
-              <Menu
-                theme="dark"
-                mode="horizontal"
-                defaultSelectedKeys={['2']}
-                style={
-                  { lineHeight: '64px' }
-                }
-              >
-                <Menu.Item key="1">nav 1</Menu.Item>
-                <Menu.Item key="2">nav 2</Menu.Item>
-                <Menu.Item key="3">nav 3</Menu.Item>
-              </Menu>
+              <HeaderMenu />
             </Header>
             <Layout>
               <Sider
@@ -78,7 +67,7 @@ class AdminLayout extends React.Component {
                   { height: `${window.innerHeight - 64}px` }
                 }
               >
-                <LeftSideMenu />
+                <AdminSideMenu />
               </Sider>
               <Content>
                 <Component

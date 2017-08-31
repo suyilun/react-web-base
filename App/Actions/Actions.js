@@ -1,5 +1,6 @@
 import axios from 'axios';
 import ActionTypes from './ActionTypes';
+import Console from '../Console/Console';
 
 
 export function resizeWindow() {
@@ -17,10 +18,10 @@ export function findUser(user) {
 export function fetchUser() {
   return (dispatch) => {
     axios.get('/json/test.json', { responseType: 'json' }).then((response) => {
-      console.log(response.data);
+      Console.log(response.data);
       dispatch(findUser(response.data));
     }).catch((error) => {
-      console.log(error);
+      Console.log(error);
     });
   };
 }

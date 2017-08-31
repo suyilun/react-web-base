@@ -1,6 +1,8 @@
 import AdminLayout from './AdminLayout';
 import IndexLayout from './IndexLayout';
 
+require('./AppLayout.less');
+
 // export default { AdminLayout, IndexLayout };
 module.exports = { AdminLayout, IndexLayout };
 // export default bar => module.default.bar
