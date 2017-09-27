@@ -5,6 +5,8 @@ import { AdminLayout, IndexLayout } from '../Layout/';
 import Home from '../Component/Home/Home';
 import Ide from '../Component/Ide/Ide';
 import Console from '../Console/Console';
+import TaskJobEditor from '../Component/TaskJob/TaskJobEditor';
+import TaskJob from '../Component/TaskJob/TaskJob';
 
 
 const Tacos = ({ match }) => {
@@ -27,6 +29,8 @@ const AdminRouter = () => (
     <Switch>
       <AdminLayout path="/home" component={Home} />
       <AdminLayout path="/Ide" component={Ide} />
+      <AdminLayout path="/TaskJobEditor" component={TaskJobEditor} />
+      <AdminLayout path="/TaskJob" component={TaskJob} />
       <IndexLayout exact path="/" component={Home} />
       <Route path="/tacos" component={Tacos} />
     </Switch>

@@ -6,28 +6,43 @@ const webpack = require('webpack');
 const path = require('path');
 const env = require('./Env/env');
 
+const nodeModelDir = path.join(__dirname, 'node_modules');
 const UglifyJsPlugin = webpack.optimize.UglifyJsPlugin;
 // const HtmlwebpackPlugin = require('html-webpack-plugin');
 const OpenBrowserPlugin = require('open-browser-webpack-plugin');
 const LodashModuleReplacementPlugin = require('lodash-webpack-plugin');
 
 //  process.env.NODE_ENV
+const deps = [
+  'react/dist/react.min.js',
+  'react-router/dist/react-router.min.js',
+  'moment/min/moment.min.js',
+  'underscore/underscore-min.js',
+  'antd/dist/antd.min.js',
+  'lodash/lodash.js',
+];
 
 //  引用环境属性，根据profile属性来修改webpack属性
 const envPlugin = new webpack.DefinePlugin({ __ENV__: JSON.stringify(env) });
 
-const webpackOptions = {
+const config = {
   entry: {
     app: ['babel-polyfill', './App/index.jsx'],
   },
   output: {
     path: path.resolve(__dirname, './build'),
     filename: '[name].js',
-    //  filename: "bundle.js"
   },
   resolve: {
     extensions: ['.web.js', '.js', '.json', '.web.jsx', '.jsx'],
+    alias: [],
   },
+  // externals: {
+  //   react: 'React',
+  //   'react-dom': 'ReactDOM',
+  //   _: 'lodash',
+  //   antd: 'antd',
+  // },
   plugins: [
     envPlugin,
     //  生成 index.html 插件
@@ -44,70 +59,57 @@ const webpackOptions = {
     // })
   ],
   module: {
-    loaders: [{
-      test: /\.(css)$/,
-      loaders: ['style-loader', 'css-loader?modules&localIdentName=[local]-[hash:base64:5]', 'less-loader'],
-    },
-    {
-      test: /\.(less)$/,
-      loader: 'style-loader!css-loader!less-loader',
-    },
-    {
-      test: /\.(jpg|png)$/,
-      loader: 'url-loader?limit=8192',
-    },
-    {
-      test: /\.(eot|svg|ttf|woff|woff2)\w*/,
-      loader: 'url-loader?limit=10000&mimetype=application/font-woff',
-    },
-    {
-      test: /\.(js|jsx)$/,
-      loader: 'babel-loader',
-      exclude: '/node_modules/',
-      query: {
-        presets: ['es2015', 'stage-0', 'react'],
-        plugins: [['import', {
-          libraryName: 'antd',
-          style: true, // or 'css'
-        }]],
-        //  'transform-runtime'
-        //  plugins: [
-        //   "transform-object-rest-spread",
-        //   "transform-es2015-arrow-functions",
-        //   "transform-object-assign",
-        //   "es6-promise"
-        // ]
+    loaders: [
+      {
+        test: /\.(css)$/,
+        loaders: ['style-loader', 'css-loader?modules&localIdentName=[local]-[hash:base64:5]', 'less-loader'],
       },
-    }],
-  },
-  externals: {
-    react: 'React',
-    'react-dom': 'ReactDOM',
-    _: 'lodash',
-    antd: 'antd',
+      {
+        test: /\.(less)$/,
+        loader: 'style-loader!css-loader!less-loader',
+      },
+      {
+        test: /\.(jpg|png)$/,
+        loader: 'url-loader?limit=8192',
+      },
+      {
+        test: /\.(eot|svg|ttf|woff|woff2)\w*/,
+        loader: 'url-loader?limit=10000&mimetype=application/font-woff',
+      },
+      {
+        test: /\.(js|jsx)$/,
+        loader: 'babel-loader',
+        exclude: '/node_modules/',
+        query: {
+          presets: ['es2015', 'stage-0', 'react'],
+          plugins: [['import', {
+            libraryName: 'antd',
+            style: true, // or 'css'
+          }]],
+        },
+      },
+    ],
+    noParse: [],
   },
 };
-//  console.log(process.env.NODE_ENV)
-
   //  开发者模式
 if (process.env.NODE_ENV === 'develop') {
   //  热响应插件
-  webpackOptions.plugins.push(new webpack.HotModuleReplacementPlugin());
+  config.plugins.push(new webpack.HotModuleReplacementPlugin());
   //  弹出界面插件
-  webpackOptions.plugins.push(
+  config.plugins.push(
     new OpenBrowserPlugin({
       url: 'http://localhost:9999',
     }));
   //  "source-map";// #eval-
-  webpackOptions.devtool = 'source-map';
-
+  config.devtool = 'source-map';
   //  代理设置
-  webpackOptions.devServer = {
-    port: 8081,
+  config.devServer = {
+    port: 9999,
     proxy: {
       '/api/*': {
         host: 'localhost',
-        target: 'http://localhost:10001/',
+        target: 'http://localhost:8080/api',
         secure: false,
         withCredentials: true,
         pathRewrite: {
@@ -116,36 +118,19 @@ if (process.env.NODE_ENV === 'develop') {
       },
     },
   };
-  //  webpackOptions.externals = Object.assign(webpackOptions.externals,
-  // {"antd": true, "moment": true})
-  //  webpackOptions.module.loaders.push();
 } else {
-  webpackOptions.plugins.push(new UglifyJsPlugin({
+  config.plugins.push(new UglifyJsPlugin({
     compress: {
       warnings: false,
     },
     sourceMap: false,
   }));
-  // webpackOptions.module.loaders.push({
-  //   test: /\.(js|jsx)$/,
-  //   loader: "babel-loader",
-  //   exclude: '/node_modules/',
-  //   query: {
-  //     compact: false,
-  //     presets: ["react", "es2015", "stage-0"],
-  //     //"plugins": ["transform-runtime"]
-  //     // plugins: [
-  //     //   "transform-object-rest-spread",
-  //     //   "transform-es2015-arrow-functions",
-  //     //   "transform-object-assign",
-  //     //   "es6-promise",
-  //     //   // ["import", [{
-  //     //   //     "libraryName": "antd",
-  //     //   //     "style-loader": true
-  //     //   // }]
-  //     //   //]
-  //     // ]
-  //   }
-  // });
 }
-module.exports = webpackOptions;
+
+deps.forEach((dep) => {
+  const depPath = path.resolve(nodeModelDir, dep);
+  config.resolve.alias[dep.split(path.sep)[0]] = depPath;
+  config.module.noParse.push(depPath);
+});
+
+module.exports = config;
