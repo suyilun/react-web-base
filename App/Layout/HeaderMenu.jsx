@@ -7,7 +7,7 @@ const HeaderMenu = () => (
     <Menu
       theme="dark"
       mode="horizontal"
-      defaultSelectedKeys={['1']}
+      defaultSelectedKeys={[]}
       style={
         { lineHeight: '64px' }
       }

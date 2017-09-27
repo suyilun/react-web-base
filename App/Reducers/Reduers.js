@@ -5,15 +5,18 @@ import Console from '../Console/Console';
 
 //  使用combineReducers合并 Reduer，生成最后state，将会根据reduer方法名做key
 
-function mainWindow(state = {}, action) {
+const baseState = { tblSize: 'middle', btnSize: 'default' };
+
+function AdminLayout(state = { collapsed: false, height: '500px' }, action) {
   // Console.log('reduce  resizeWindow');
   switch (action.type) {
-    case ActionTypes.WINDOW_RESIZE_HEIGHT:
-      return { height: action.height };
+    case ActionTypes.LAYOUT_TOGGLE_SIDE_MENU:
+      return { ...state, ...action.actionData };
+    case ActionTypes.LAYOUT_RESIZE_HEIGHT:
+      return { ...state, height: `${window.innerHeight - 64}px` };
     default: return state;
   }
 }
-
 
 function counter(state = { count: 0 }, action) {
   // Console.log('counter', action);
@@ -47,7 +50,9 @@ function users(state = {}, action) {
   }
 }
 
-function taskJob(state = { searchText: '',
+function taskJob(state = {
+  ...baseState,
+  searchText: '',
   filtered: false,
   colDropFilter: false,
   loading: true,
@@ -57,7 +62,8 @@ function taskJob(state = { searchText: '',
     case ActionTypes.PAGE_TASKJOB:
     case ActionTypes.OPEN_TASKJOB:
     case ActionTypes.CANCEL_TASKJOB:
-    case ActionTypes.OPEN_SEARCH_COLUMN_TASKJOB:
+    case ActionTypes.OPEN_SEARCH_COL_TASKJOB:
+    case ActionTypes.CHANGE_SEARCH_COL_TASKJOB:
       return {
         ...state,
         ...action.actionData,
@@ -68,4 +74,4 @@ function taskJob(state = { searchText: '',
 }
 
 //  这边可以使用expect 做单元测试
-export default combineReducers({ todos, counter, users, mainWindow, taskJob });
+export default combineReducers({ todos, counter, users, AdminLayout, taskJob });

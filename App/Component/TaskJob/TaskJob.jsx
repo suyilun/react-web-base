@@ -6,10 +6,10 @@ import * as Actions from '../../Actions/Actions';
 
 require('./TaskJob.less');
 
-const TaskJobFormView = ({ visible, modelName, dispatch }) => (
+const TaskJobFormView = ({ showForm, modelName, dispatch }) => (
   <Modal
     title="任务编辑"
-    visible={visible}
+    visible={showForm}
     onOk={() => {}}
     onCancel={() => { dispatch(Actions.createCancelModelAction(modelName)); }}
   >
@@ -17,21 +17,23 @@ const TaskJobFormView = ({ visible, modelName, dispatch }) => (
   </Modal>
 );
 
-TaskJobFormView.propTypes = { visible: PropTypes.bool,
+TaskJobFormView.propTypes = {
+  showForm: PropTypes.bool,
   modelName: PropTypes.string,
   dispatch: PropTypes.func };
-TaskJobFormView.defaultProps = { visible: false,
+TaskJobFormView.defaultProps = {
+  showForm: false,
   modelName: 'TaskJob',
   dispatch: Actions.defauleDispatcher,
 };
 
-const TableOperate = ({ buttons, modelName, dispatch }) => (
+const TableOperate = ({ buttons, modelName, btnSize, dispatch }) => (
   <div>
     {
       buttons.map(
         (btn) => {
           return (
-            <Button type="primary" onClick={() => { dispatch(Actions.createOpenModelAction(modelName)); }}>
+            <Button type="primary" size={btnSize} onClick={() => { dispatch(Actions.createOpenModelAction(modelName)); }}>
               { btn.text }
             </Button>
           );
@@ -40,10 +42,14 @@ const TableOperate = ({ buttons, modelName, dispatch }) => (
     }
   </div>
 );
-TableOperate.propTypes = { buttons: PropTypes.array,
+TableOperate.propTypes = {
+  btnSize: PropTypes.string,
+  buttons: PropTypes.array,
   modelName: PropTypes.string,
   dispatch: PropTypes.func };
-TableOperate.defaultProps = { buttons: [{ type: 'add', text: '新增' }],
+TableOperate.defaultProps = {
+  btnSize: null,
+  buttons: [{ type: 'add', text: '新增' }],
   modelName: 'TaskJob',
   dispatch: Actions.defauleDispatcher,
 };
@@ -51,8 +57,9 @@ TableOperate.defaultProps = { buttons: [{ type: 'add', text: '新增' }],
 const TaskJobForm = Form.create({})(TaskJobFormView);
 
 class TaskJobTable extends Component {
-  static modelName='TaskJob';
+  // static modelName='TaskJob';
   static propTypes = {
+    tblSize: PropTypes.string,
     dispatch: PropTypes.func,
     pageData: PropTypes.object,
     formData: PropTypes.object,
@@ -65,6 +72,7 @@ class TaskJobTable extends Component {
   };
 
   static defaultProps = {
+    tblSize: null,
     dispatch: Actions.defauleDispatcher,
     pageData: null,
     formData: null,
@@ -74,29 +82,66 @@ class TaskJobTable extends Component {
     searchText: '',
     filtered: false,
     colDropFilter: false,
+
   };
 
   componentDidMount() {
     const { dispatch } = this.props;
     const pageModelAction = Actions.createPageModelAction('TaskJob');
     dispatch(pageModelAction);
-    console.log('componentDidMount');
   }
 
   componentDidUpdate(prevProps) {
     const { colDropFilter } = this.props;
     const { isComposing: wasColDropFilter } = prevProps;
     if (colDropFilter && !wasColDropFilter) {
-      // const { callback } = this.props;
-      // callback.call(this);
       // () => { this.searchInput.focus(); };
     }
   }
 
-
   onSearch = () => {
     alert('onSearch');
   }
+
+  modelName = () => 'TaskJob'
+
+  columns= () => (
+    [
+      {
+        title: '任务名称',
+        dataIndex: 'name',
+        filterDropdown: (
+          <div className="custom-filter-dropdown">
+            <Input
+              ref={(ele) => {
+                this.searhInput = ele;
+                if (this.props.colDropFilter && ele) { ele.focus(); }
+              }}
+              placeholder="Search name"
+              value={this.props.searchText}
+              onChange={(el) => {
+                const act = Actions.createChgShColAction(
+                  this.modelName(), el.target.value);
+                this.props.dispatch(act);
+              }}
+              onPressEnter={this.onSearch}
+            />
+            <Button type="primary" onClick={this.onSearch}>搜索</Button>
+          </div>
+        ),
+        filterIcon: <Icon type="smile-o" style={{ color: this.props.filtered ? '#108ee9' : '#aaa' }} />,
+        filterDropdownVisible: this.props.colDropFilter,
+        onFilterDropdownVisibleChange: (visible) => {
+          const act = Actions.createOpenShColAction(this.modelName(), visible);
+          this.props.dispatch(act);
+        },
+      },
+      {
+        title: '创建时间',
+        dataIndex: 'createTime',
+      },
+    ]
+  )
 
   handleTableChange = (pagination, filters, sorter) => {
     const { dispatch } = this.props;
@@ -112,57 +157,18 @@ class TaskJobTable extends Component {
       sortOrder: sorter.order,
       ...filters,
     };
-    const pageModelAction = Actions.createPageModelAction('TaskJob', pageWeb);
+    const pageModelAction = Actions.createPageModelAction(this.modelName(), pageWeb);
     dispatch(pageModelAction);
   }
 
   render() {
-    const { dispatch, pageData, loading, pagination, showForm, searchText,
-      filtered, colDropFilter, formData,
-    } = this.props;
-    const columns = [];
-    columns.push(
-      {
-        title: '任务名称',
-        dataIndex: 'name',
-        filterDropdown: (
-          <div className="custom-filter-dropdown">
-            <Input
-              ref={(ele) => {
-                this.searhInput = ele;
-                if (colDropFilter && ele) { ele.focus(); }
-              }}
-              placeholder="Search name"
-              value={searchText}
-              onChange={() => {}}
-              onPressEnter={this.onSearch}
-            />
-            <Button type="primary" onClick={this.onSearch}>搜索</Button>
-          </div>
-        ),
-        filterIcon: <Icon type="smile-o" style={{ color: filtered ? '#108ee9' : '#aaa' }} />,
-        filterDropdownVisible: colDropFilter,
-        onFilterDropdownVisibleChange: (visible) => {
-          dispatch(Actions.createOpenSearchColumnAction(TaskJobTable.modelName,
-            visible)).then(() => {
-            console.log('$$$$$$$$$$ %o', this.searchInput);
-            // this.searchInput.focus();
-          }).catch((e) => { console.log(e); });
-        },
-      },
-    );
-    columns.push(
-      {
-        title: '创建时间',
-        dataIndex: 'createTime',
-      },
-    );
+    const { tblSize, pageData, loading, pagination } = this.props;
     return (
-      <Card>
-        <TableOperate modelName={'TaskJob'} dispatch={dispatch} />
+      <Card title="任务管理">
+        <TableOperate modelName={this.modelName()} {...this.props} />
         <Table
-          size="middle"
-          columns={columns}
+          size={tblSize}
+          columns={this.columns()}
           rowKey={record => record.id}
           dataSource={pageData.list}
           onChange={this.handleTableChange}
@@ -170,13 +176,9 @@ class TaskJobTable extends Component {
           pagination={pagination}
         />
         <TaskJobForm
-          visible={showForm}
-          modelName={'TaskJob'}
-          dispatch={dispatch}
-          formData={formData}
+          modelName={this.modelName()}
+          {...this.props}
         />
-        showForm:{showForm ? 'true' : 'false'},
-        colDropFilter:  {colDropFilter ? 'true' : 'false'}
       </Card>
     );
   }
