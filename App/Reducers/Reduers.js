@@ -64,6 +64,7 @@ function taskJob(state = {
     case ActionTypes.CANCEL_TASKJOB:
     case ActionTypes.OPEN_SEARCH_COL_TASKJOB:
     case ActionTypes.CHANGE_SEARCH_COL_TASKJOB:
+    case ActionTypes.GET_TASKJOB:
       return {
         ...state,
         ...action.actionData,

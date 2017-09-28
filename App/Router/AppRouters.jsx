@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { HashRouter as Router} from 'react-router-dom';
+import { HashRouter as Router, Redirect } from 'react-router-dom';
 import { AdminLayout, IndexLayout } from '../Layout/';
 
 import Console from '../Console/Console';

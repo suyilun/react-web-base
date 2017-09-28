@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Table, Form, Button, Modal, Card, Input, Icon } from 'antd';
+import { Table, Form, Button, Modal, Card, Input, Icon, Badge } from 'antd';
 import PropTypes from 'prop-types';
 import * as Actions from '../../Actions/Actions';
 
@@ -31,13 +31,11 @@ const TableOperate = ({ buttons, modelName, btnSize, dispatch }) => (
   <div>
     {
       buttons.map(
-        (btn) => {
-          return (
-            <Button type="primary" size={btnSize} onClick={() => { dispatch(Actions.createOpenModelAction(modelName)); }}>
-              { btn.text }
-            </Button>
-          );
-        },
+        btn => (
+          <Button type="primary" size={btnSize} onClick={() => { dispatch(Actions.createOpenModelAction(modelName)); }}>
+            { btn.text }
+          </Button>
+        ),
       )
     }
   </div>
@@ -59,6 +57,7 @@ const TaskJobForm = Form.create({})(TaskJobFormView);
 class TaskJobTable extends Component {
   // static modelName='TaskJob';
   static propTypes = {
+    modelName: PropTypes.string,
     tblSize: PropTypes.string,
     dispatch: PropTypes.func,
     pageData: PropTypes.object,
@@ -72,6 +71,7 @@ class TaskJobTable extends Component {
   };
 
   static defaultProps = {
+    modelName: 'TaskJob',
     tblSize: null,
     dispatch: Actions.defauleDispatcher,
     pageData: null,
@@ -86,8 +86,8 @@ class TaskJobTable extends Component {
   };
 
   componentDidMount() {
-    const { dispatch } = this.props;
-    const pageModelAction = Actions.createPageModelAction('TaskJob');
+    const { dispatch, modelName } = this.props;
+    const pageModelAction = Actions.createPageModelAction(modelName);
     dispatch(pageModelAction);
   }
 
@@ -103,7 +103,10 @@ class TaskJobTable extends Component {
     alert('onSearch');
   }
 
-  modelName = () => 'TaskJob'
+  showEditForm = (id) => {
+    const { dispatch, modelName } = this.props;
+    dispatch(Actions.createShowEditModelAction(modelName, { id }));
+  }
 
   columns= () => (
     [
@@ -132,19 +135,44 @@ class TaskJobTable extends Component {
         filterIcon: <Icon type="smile-o" style={{ color: this.props.filtered ? '#108ee9' : '#aaa' }} />,
         filterDropdownVisible: this.props.colDropFilter,
         onFilterDropdownVisibleChange: (visible) => {
-          const act = Actions.createOpenShColAction(this.modelName(), visible);
+          const act = Actions.createOpenShColAction(this.props.modelName, visible);
           this.props.dispatch(act);
+        },
+      },
+      {
+        title: '任务描述',
+        dataIndex: 'description',
+      },
+      {
+        title: '状态',
+        dataIndex: 'active',
+        render: (text) => {
+          if (text) {
+            return (<span><Badge status="processing" />运行中</span>);
+          }
+          return (<span><Badge status="default" />未运行</span>);
         },
       },
       {
         title: '创建时间',
         dataIndex: 'createTime',
       },
+      {
+        title: '操作',
+        dataIndex: 'id',
+        render: (text, record, index) =>
+          (
+            <div>
+              <a >激活 </a> &nbsp;&nbsp;
+              <a onClick={() => { this.showEditForm(text); }} role="button" tabIndex={index} >修改</a>
+            </div>
+          ),
+      },
     ]
   )
 
   handleTableChange = (pagination, filters, sorter) => {
-    const { dispatch } = this.props;
+    const { dispatch, modelName } = this.props;
     const pager = this.state.pagination;
     if (pagination) {
       pager.pageSize = pagination.pageSize;
@@ -157,15 +185,15 @@ class TaskJobTable extends Component {
       sortOrder: sorter.order,
       ...filters,
     };
-    const pageModelAction = Actions.createPageModelAction(this.modelName(), pageWeb);
+    const pageModelAction = Actions.createPageModelAction(modelName, pageWeb);
     dispatch(pageModelAction);
   }
 
   render() {
-    const { tblSize, pageData, loading, pagination } = this.props;
+    const { tblSize, pageData, loading, pagination, modelName } = this.props;
     return (
       <Card title="任务管理">
-        <TableOperate modelName={this.modelName()} {...this.props} />
+        <TableOperate modelName={modelName} {...this.props} />
         <Table
           size={tblSize}
           columns={this.columns()}
@@ -176,7 +204,7 @@ class TaskJobTable extends Component {
           pagination={pagination}
         />
         <TaskJobForm
-          modelName={this.modelName()}
+          modelName={modelName}
           {...this.props}
         />
       </Card>

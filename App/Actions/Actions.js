@@ -125,6 +125,26 @@ export function createPageModelAction(modelName, pageWeb = {}) {
   };
 }
 
+export function createShowEditModelAction(modelName, param = {}) {
+  return (dispatch) => {
+    axios.get(`${ctxPath}/job/${modelName}/get`, { responseType: 'json', params: { ...param } })
+      .then((response) => {
+        try {
+          const key = `GET_${modelName.toUpperCase()}`;
+          const type = ActionTypes[key];
+          const actionData = { formData: response.data, showForm: true };
+          dispatch({ type, actionData });
+        } catch (error) {
+          // TOOD:需要修改
+          throw error;
+        }
+      }).catch((error) => {
+        throw error;
+        // dispatch(catchError({ loading: false, error }));
+      });
+  };
+}
+
 export function defauleDispatcher() {
   Console.error('默认dispatch');
 }

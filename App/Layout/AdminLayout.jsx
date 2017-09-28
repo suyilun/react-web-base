@@ -1,5 +1,5 @@
 import React from 'react';
-import { HashRouter as Router, Switch, Route, Redirect, Link, withRouter } from 'react-router-dom';
+import { Switch, Route, Link, withRouter } from 'react-router-dom';
 import { Layout, Breadcrumb } from 'antd';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -79,4 +79,4 @@ class AdminLayout extends React.Component {
   }
 }
 
-export default withRouter(connect((state) => ({...state.AdminLayout }))(AdminLayout));
+export default withRouter(connect(state => ({ ...state.AdminLayout }))(AdminLayout));
