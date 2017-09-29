@@ -70,7 +70,7 @@ class AdminLayout extends React.Component {
             <Switch>
               <Route path="/apps" component={Apps} />
               <Route path="/TaskJob" component={TaskJob} />
-              <Route render={() => <div>Home Page</div>} />
+              <Route render={() => <div>Home Page Test </div>} />
             </Switch>
           </Content>
         </Layout>

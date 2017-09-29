@@ -1,30 +1,66 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Table, Form, Button, Modal, Card, Input, Icon, Badge } from 'antd';
+import { Table, Form, Button, Modal, Card, Input, Icon, Badge, Tag } from 'antd';
 import PropTypes from 'prop-types';
 import * as Actions from '../../Actions/Actions';
 
 require('./TaskJob.less');
 
-const TaskJobFormView = ({ showForm, modelName, dispatch }) => (
-  <Modal
-    title="任务编辑"
-    visible={showForm}
-    onOk={() => {}}
-    onCancel={() => { dispatch(Actions.createCancelModelAction(modelName)); }}
-  >
-  11
-  </Modal>
-);
+const FormItem = Form.Item;
+
+const formItemLayout = {
+  labelCol: { span: 8 },
+  wrapperCol: { span: 16 },
+};
+
+const TaskJobFormView = ({ form, showForm, iptSize, onCancel }) => {
+  const { getFieldDecorator } = form;
+  return (
+    <Modal
+      title="任务编辑"
+      visible={showForm}
+      onOk={() => {}}
+      onCancel={onCancel}
+    >
+      <Form layout={'inline'}>
+        <FormItem {...formItemLayout} label="任务名">
+          {getFieldDecorator('name', {
+            rules: [{
+              required: true,
+              message: 'Please input your name',
+            }],
+          })(
+            <Input placeholder="任务名" size={iptSize} />,
+          )}
+        </FormItem>
+        <FormItem {...formItemLayout} label="关键字">
+          {getFieldDecorator('taskJobKey', {
+            rules: [{
+              required: true,
+              message: 'Please input your name',
+            }],
+          })(
+            <Input placeholder="" size={iptSize} />,
+          )}
+        </FormItem>
+      </Form>
+    </Modal>
+  );
+};
 
 TaskJobFormView.propTypes = {
   showForm: PropTypes.bool,
   modelName: PropTypes.string,
-  dispatch: PropTypes.func };
+  onCancel: PropTypes.func,
+  iptSize: PropTypes.string,
+  form: PropTypes.object,
+};
 TaskJobFormView.defaultProps = {
   showForm: false,
   modelName: 'TaskJob',
-  dispatch: Actions.defauleDispatcher,
+  onCancel: Actions.defauleDispatcher,
+  iptSize: '',
+  form: null,
 };
 
 const TableOperate = ({ buttons, modelName, btnSize, dispatch }) => (
@@ -52,7 +88,24 @@ TableOperate.defaultProps = {
   dispatch: Actions.defauleDispatcher,
 };
 
-const TaskJobForm = Form.create({})(TaskJobFormView);
+const TaskJobForm = Form.create({
+  onFieldsChange(props, changedFields) {
+    // changedFields
+    // 修改时与redux 绑定
+    // const { modelName } = props;
+    // props.dispatch(Actions.createResetModelAction(modelName));
+  },
+  mapPropsToFields(props) {
+    const { formData } = props;
+    const fieldsValue = {};
+    if (formData) {
+      Object.keys(formData).forEach((key) => {
+        fieldsValue[key] = { value: formData[key] };
+      });
+    }
+    return fieldsValue;
+  },
+})(TaskJobFormView);
 
 class TaskJobTable extends Component {
   // static modelName='TaskJob';
@@ -82,7 +135,6 @@ class TaskJobTable extends Component {
     searchText: '',
     filtered: false,
     colDropFilter: false,
-
   };
 
   componentDidMount() {
@@ -100,12 +152,20 @@ class TaskJobTable extends Component {
   }
 
   onSearch = () => {
-    alert('onSearch');
+    // alert('onSearch');
+  }
+
+  onCancel = () => {
+    const { dispatch, modelName } = this.props;
+    this.form.resetFields();
+    dispatch(Actions.createCancelModelAction(modelName));
   }
 
   showEditForm = (id) => {
     const { dispatch, modelName } = this.props;
+    // , formData
     dispatch(Actions.createShowEditModelAction(modelName, { id }));
+    // .then(() => { console.log("formData:%o",formData);this.form.setFieldsValue(formData); });
   }
 
   columns= () => (
@@ -137,6 +197,7 @@ class TaskJobTable extends Component {
         onFilterDropdownVisibleChange: (visible) => {
           const act = Actions.createOpenShColAction(this.props.modelName, visible);
           this.props.dispatch(act);
+          // .then(() => { console.log('thenthen'); });
         },
       },
       {
@@ -145,12 +206,25 @@ class TaskJobTable extends Component {
       },
       {
         title: '状态',
+        dataIndex: 'inSchd',
+        render: (text, record) => {
+          if (text) {
+            return (<span><Badge status="processing" />计划执行中</span>);
+          }
+          if (record.active && !text) {
+            return (<span><Badge status="warning" />计划已失效</span>);
+          }
+          return (<span><Badge status="default" />计划未设置</span>);
+        },
+      },
+      {
+        title: '是否激活',
         dataIndex: 'active',
         render: (text) => {
           if (text) {
-            return (<span><Badge status="processing" />运行中</span>);
+            return (<Tag color="green">已激活</Tag>);
           }
-          return (<span><Badge status="default" />未运行</span>);
+          return (<Tag>未激活</Tag>);
         },
       },
       {
@@ -163,7 +237,8 @@ class TaskJobTable extends Component {
         render: (text, record, index) =>
           (
             <div>
-              <a >激活 </a> &nbsp;&nbsp;
+              <a >激活 </a>
+              &nbsp;&nbsp;
               <a onClick={() => { this.showEditForm(text); }} role="button" tabIndex={index} >修改</a>
             </div>
           ),
@@ -204,8 +279,9 @@ class TaskJobTable extends Component {
           pagination={pagination}
         />
         <TaskJobForm
-          modelName={modelName}
+          ref={(ele) => { this.form = ele; }}
           {...this.props}
+          onCancel={this.onCancel}
         />
       </Card>
     );

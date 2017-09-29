@@ -1,6 +1,6 @@
 import axios from 'axios';
 import _ from 'lodash';
-// import Promise from 'Promise';
+import Promise from 'Promise';
 import ActionTypes from './ActionTypes';
 import Console from '../Console/Console';
 
@@ -50,6 +50,16 @@ export function resizeWindow() {
 
 export function createLayoutChgHeightAct() {
   return { type: ActionTypes.LAYOUT_RESIZE_HEIGHT };
+}
+
+
+export function createResetModelAction(modelName) {
+  return (dispatch) => {
+    const actionData = { formData: {}, showForm: false };
+    const key = `RESET_${modelName.toUpperCase()}`;
+    const type = ActionTypes[key];
+    dispatch({ type, actionData });
+  };
 }
 
 // 关闭窗口
@@ -109,15 +119,10 @@ export function createPageModelAction(modelName, pageWeb = {}) {
   return (dispatch) => {
     axios.post(`${ctxPath}/job/${modelName}/page`, { responseType: 'json', params: { ...pageWeb } })
       .then((response) => {
-        try {
-          const key = `PAGE_${modelName.toUpperCase()}`;
-          const type = ActionTypes[key];
-          const actionData = { pageData: response.data, loading: false };
-          dispatch({ type, actionData });
-        } catch (error) {
-          // TOOD:需要修改
-          throw error;
-        }
+        const key = `PAGE_${modelName.toUpperCase()}`;
+        const type = ActionTypes[key];
+        const actionData = { pageData: response.data, loading: false };
+        dispatch({ type, actionData });
       }).catch((error) => {
         throw error;
         // dispatch(catchError({ loading: false, error }));
@@ -127,21 +132,22 @@ export function createPageModelAction(modelName, pageWeb = {}) {
 
 export function createShowEditModelAction(modelName, param = {}) {
   return (dispatch) => {
-    axios.get(`${ctxPath}/job/${modelName}/get`, { responseType: 'json', params: { ...param } })
+    // return Promise.resolve(
+    return axios.get(`${ctxPath}/job/${modelName}/get`, { responseType: 'json', params: { ...param } })
       .then((response) => {
-        try {
-          const key = `GET_${modelName.toUpperCase()}`;
-          const type = ActionTypes[key];
-          const actionData = { formData: response.data, showForm: true };
-          dispatch({ type, actionData });
-        } catch (error) {
-          // TOOD:需要修改
-          throw error;
-        }
+        const key = `GET_${modelName.toUpperCase()}`;
+        const type = ActionTypes[key];
+        const actionData = { formData: response.data, showForm: true };
+        dispatch(dispatch({ type, actionData }));
+        // dispatch({ type, actionData });
+        // return Promise.reslove();
+        // return Promise.resolve();
       }).catch((error) => {
         throw error;
         // dispatch(catchError({ loading: false, error }));
-      });
+      })
+      //);
+
   };
 }
 
