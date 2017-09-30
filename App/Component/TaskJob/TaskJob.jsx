@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Table, Form, Button, Modal, Card, Input, Icon, Badge, Tag } from 'antd';
+import _ from 'lodash';
+import { Table, Form, Button, Modal, Card, Input, InputNumber, Icon, Badge, Tag, Row, Col, DatePicker, Select, Menu, Dropdown } from 'antd';
 import PropTypes from 'prop-types';
 import * as Actions from '../../Actions/Actions';
 
@@ -11,9 +12,17 @@ const FormItem = Form.Item;
 const formItemLayout = {
   labelCol: { span: 8 },
   wrapperCol: { span: 16 },
+  style: { marginBottom: 5 },
 };
 
-const TaskJobFormView = ({ form, showForm, iptSize, onCancel }) => {
+const oneRowItemLayout = {
+  labelCol: { span: 4 },
+  wrapperCol: { span: 20 },
+  style: { marginBottom: 5, marginLeft: '-10px' },
+};
+
+
+const TaskJobFormView = ({ form, showForm, selectIntervalType, iptSize, selectSize, onCancel }) => {
   const { getFieldDecorator } = form;
   return (
     <Modal
@@ -22,27 +31,109 @@ const TaskJobFormView = ({ form, showForm, iptSize, onCancel }) => {
       onOk={() => {}}
       onCancel={onCancel}
     >
-      <Form layout={'inline'}>
-        <FormItem {...formItemLayout} label="任务名">
-          {getFieldDecorator('name', {
-            rules: [{
-              required: true,
-              message: 'Please input your name',
-            }],
-          })(
-            <Input placeholder="任务名" size={iptSize} />,
-          )}
-        </FormItem>
-        <FormItem {...formItemLayout} label="关键字">
-          {getFieldDecorator('taskJobKey', {
-            rules: [{
-              required: true,
-              message: 'Please input your name',
-            }],
-          })(
-            <Input placeholder="" size={iptSize} />,
-          )}
-        </FormItem>
+      <Form >
+        {getFieldDecorator('id', {
+          rules: [{
+          }],
+        })(
+          <Input type={'hidden'} />,
+        )}
+        <Row gutter={40}>
+          <Col span={12}>
+            <FormItem {...formItemLayout} label="任务名">
+              {getFieldDecorator('name', {
+                rules: [{
+                  required: true,
+                  message: 'Please input your name',
+                }],
+              })(
+                <Input placeholder="任务名" size={iptSize} />,
+              )}
+            </FormItem>
+          </Col>
+          <Col span={12}>
+            <FormItem {...formItemLayout} label="键值">
+              {getFieldDecorator('taskJobKey', {
+                rules: [{
+                  required: true,
+                  message: 'Please input your name',
+                }],
+              })(
+                <Input placeholder="键值" size={iptSize} />,
+              )}
+            </FormItem>
+          </Col>
+          <Col span={12}>
+            <FormItem {...formItemLayout} label="开始">
+              {getFieldDecorator('startAt', {
+                rules: [{
+                }],
+              })(
+                <DatePicker
+                  disabledDate={(startValue)=> {}}
+                  showTime
+                  size={selectSize}
+                  format="YYYY-MM-DD HH:mm:ss"
+                  placeholder="Start"
+                />,
+              )}
+            </FormItem>
+          </Col>
+          <Col span={12}>
+            <FormItem {...formItemLayout} label="结束">
+              {getFieldDecorator('endAt', {
+              })(
+                <DatePicker
+                  disabledDate={(endValue)=> {}}
+                  showTime
+                  size={selectSize}
+                  format="YYYY-MM-DD HH:mm:ss"
+                  placeholder="End"
+                />,
+              )}
+            </FormItem>
+          </Col>
+
+          <Col span={12}>
+            <FormItem {...formItemLayout} label="间隔">
+              {getFieldDecorator('intervalVal', {
+                rules: [{
+                  required: true,
+                  message: 'Please input your name',
+                }],
+              })(
+                <InputNumber placeholder="" size={iptSize} />,
+              )}
+            </FormItem>
+          </Col>
+
+          <Col span={12}>
+            <FormItem {...formItemLayout} label="间隔类型">
+              {getFieldDecorator('intervalType', {
+                rules: [{
+                  required: true,
+                }],
+              })(
+                <Select size={selectSize}>
+                  { selectIntervalType.map(enumValue => (
+                    <Select.Option value={enumValue.value}>{enumValue.text}</Select.Option>))
+                  }
+                </Select>,
+              )}
+            </FormItem>
+          </Col>
+
+          <Col span={24}>
+            <FormItem {...oneRowItemLayout} label="描述">
+              {getFieldDecorator('description', {
+                rules: [{
+                }],
+              })(
+                <Input type="textarea" placeholder="任务描述" />,
+              )}
+            </FormItem>
+          </Col>
+        </Row>
       </Form>
     </Modal>
   );
@@ -50,16 +141,20 @@ const TaskJobFormView = ({ form, showForm, iptSize, onCancel }) => {
 
 TaskJobFormView.propTypes = {
   showForm: PropTypes.bool,
+  selectIntervalType: PropTypes.array,
   modelName: PropTypes.string,
   onCancel: PropTypes.func,
   iptSize: PropTypes.string,
+  selectSize: PropTypes.string,
   form: PropTypes.object,
 };
 TaskJobFormView.defaultProps = {
   showForm: false,
   modelName: 'TaskJob',
+  selectIntervalType: [],
   onCancel: Actions.defauleDispatcher,
-  iptSize: '',
+  iptSize: null,
+  selectSize: null,
   form: null,
 };
 
@@ -98,17 +193,19 @@ const TaskJobForm = Form.create({
   mapPropsToFields(props) {
     const { formData } = props;
     const fieldsValue = {};
-    if (formData) {
-      Object.keys(formData).forEach((key) => {
-        fieldsValue[key] = { value: formData[key] };
-      });
-    }
+    _.keys(formData).forEach((key) => {
+      const value = formData[key];
+      if (_.has(value, 'value')) {
+        fieldsValue[key] = { value: value.value };
+      } else {
+        fieldsValue[key] = { value };
+      }
+    });
     return fieldsValue;
   },
 })(TaskJobFormView);
 
 class TaskJobTable extends Component {
-  // static modelName='TaskJob';
   static propTypes = {
     modelName: PropTypes.string,
     tblSize: PropTypes.string,
@@ -140,7 +237,9 @@ class TaskJobTable extends Component {
   componentDidMount() {
     const { dispatch, modelName } = this.props;
     const pageModelAction = Actions.createPageModelAction(modelName);
+    const enumSelectAction = Actions.createTaskJobEnumsAction();
     dispatch(pageModelAction);
+    dispatch(enumSelectAction);
   }
 
   componentDidUpdate(prevProps) {
@@ -173,6 +272,7 @@ class TaskJobTable extends Component {
       {
         title: '任务名称',
         dataIndex: 'name',
+        width: '15%',
         filterDropdown: (
           <div className="custom-filter-dropdown">
             <Input
@@ -201,25 +301,43 @@ class TaskJobTable extends Component {
         },
       },
       {
-        title: '任务描述',
-        dataIndex: 'description',
+        title: '开始',
+        dataIndex: 'startAt',
+        width: '15%',
+      },
+      {
+        title: '结束',
+        dataIndex: 'endAt',
+        width: '15%',
+      },
+      {
+        title: '间隔',
+        width: '5%',
+        dataIndex: 'intervalVal',
+      },
+      {
+        title: '单位',
+        width: '5%',
+        dataIndex: 'intervalType.text',
       },
       {
         title: '状态',
         dataIndex: 'inSchd',
+        width: '10%',
         render: (text, record) => {
           if (text) {
-            return (<span><Badge status="processing" />计划执行中</span>);
+            return (<span><Badge status="processing" />执行中</span>);
           }
           if (record.active && !text) {
-            return (<span><Badge status="warning" />计划已失效</span>);
+            return (<span><Badge status="warning" />已过期</span>);
           }
-          return (<span><Badge status="default" />计划未设置</span>);
+          return (<span><Badge status="default" />未执行</span>);
         },
       },
       {
         title: '是否激活',
         dataIndex: 'active',
+        width: '5%',
         render: (text) => {
           if (text) {
             return (<Tag color="green">已激活</Tag>);
@@ -230,18 +348,42 @@ class TaskJobTable extends Component {
       {
         title: '创建时间',
         dataIndex: 'createTime',
+        width: '15%',
       },
       {
         title: '操作',
         dataIndex: 'id',
-        render: (text, record, index) =>
-          (
-            <div>
-              <a >激活 </a>
-              &nbsp;&nbsp;
-              <a onClick={() => { this.showEditForm(text); }} role="button" tabIndex={index} >修改</a>
-            </div>
-          ),
+        render: (text, record, index) => {
+          let actMenu = (<a>运行定时</a>);
+          if (record.active) {
+            // 已激活,任务中
+            if (record.inSchd) {
+              // 停止功能
+              actMenu = (<a>停止定时</a>);
+            } else {
+              // 重新激活,这里需要先修改定时规则
+              actMenu = (<a>重新定时</a>);
+            }
+          }
+          const menu = (
+            <Menu>
+              <Menu.Item>
+                <a onClick={() => { this.showEditForm(text); }} role="button" tabIndex={index} >修改</a>
+              </Menu.Item>
+              <Menu.Item>
+                {actMenu}
+              </Menu.Item>
+            </Menu>
+          );
+
+          return (
+            <Dropdown overlay={menu}>
+              <a className="ant-dropdown-link" href="#">
+               Hover me <Icon type="down" />
+              </a>
+            </Dropdown>
+          );
+        },
       },
     ]
   )

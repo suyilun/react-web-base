@@ -5,7 +5,7 @@ import Console from '../Console/Console';
 
 //  使用combineReducers合并 Reduer，生成最后state，将会根据reduer方法名做key
 
-const themeSize = { tblSize: 'middle', btnSize: 'default', iptSize: 'small' };
+const themeSize = { tblSize: 'middle', btnSize: 'default', iptSize: 'small', selectSize: 'small' };
 
 function AdminLayout(state = { collapsed: false, height: '500px' }, action) {
   // Console.log('reduce  resizeWindow');
@@ -66,10 +66,12 @@ function taskJob(state = {
     case ActionTypes.OPEN_SEARCH_COL_TASKJOB:
     case ActionTypes.CHANGE_SEARCH_COL_TASKJOB:
     case ActionTypes.GET_TASKJOB:
+    case ActionTypes.SELECT_TASK_JOB_INTERVAL_TYPE:
       return {
         ...state,
         ...action.actionData,
       };
+
     default:
       return { ...state };
   }

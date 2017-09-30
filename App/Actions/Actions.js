@@ -125,31 +125,37 @@ export function createPageModelAction(modelName, pageWeb = {}) {
         dispatch({ type, actionData });
       }).catch((error) => {
         throw error;
-        // dispatch(catchError({ loading: false, error }));
       });
   };
 }
 
 export function createShowEditModelAction(modelName, param = {}) {
   return (dispatch) => {
-    // return Promise.resolve(
-    return axios.get(`${ctxPath}/job/${modelName}/get`, { responseType: 'json', params: { ...param } })
+    axios.get(`${ctxPath}/job/${modelName}/get`, { responseType: 'json', params: { ...param } })
       .then((response) => {
         const key = `GET_${modelName.toUpperCase()}`;
         const type = ActionTypes[key];
         const actionData = { formData: response.data, showForm: true };
-        dispatch(dispatch({ type, actionData }));
-        // dispatch({ type, actionData });
-        // return Promise.reslove();
-        // return Promise.resolve();
+        dispatch({ type, actionData });
       }).catch((error) => {
         throw error;
-        // dispatch(catchError({ loading: false, error }));
-      })
-      //);
-
+      });
   };
 }
+
+export function createTaskJobEnumsAction() {
+  return (dispatch) => {
+    axios.get(`${ctxPath}/enum/list`, { responseType: 'json', params: { clzzName: 'com.dev.job.enums.IntervalType' } })
+      .then((response) => {
+        const actionData = { selectIntervalType: response.data };
+        const type = ActionTypes.SELECT_TASK_JOB_INTERVAL_TYPE;
+        dispatch({ type, actionData });
+      }).catch((error) => {
+        throw error;
+      });
+  };
+}
+
 
 export function defauleDispatcher() {
   Console.error('默认dispatch');
