@@ -260,6 +260,65 @@ class TaskJobTable extends Component {
     dispatch(Actions.createCancelModelAction(modelName));
   }
 
+  unscheduleTaskJob = (id) => {
+    const { dispatch } = this.props;
+    dispatch(Actions.unscheduleTaskJobAction(id));
+  }
+
+  scheduleTaskJob = (id) => {
+    const { dispatch } = this.props;
+    dispatch(Actions.scheduleTaskJobAction(id));
+  }
+
+  openExpand= (expanded, record) => {
+    const { dispatch } = this.props;
+    if (expanded) dispatch(Actions.latestTaskJobLogAction(record.id));
+  }
+
+  expandedRowRender = (record) => {
+    const {taskJobLogMap } = this.props;
+    // if(taskJobLogMap)
+    console.log("taskJobLogMap is %o ",taskJobLogMap);
+    const columns= [
+      {
+        title: '时次',
+        dataIndex: 'fireTime',
+        width: '15%',
+      },
+      {
+        title: '开始',
+        dataIndex: 'beginTime',
+        width: '15%',
+      },
+      {
+        title: '结束',
+        dataIndex: 'finishTime',
+        width: '15%',
+      },
+      {
+        title: '状态',
+        dataIndex: 'running',
+        width: '10%',
+        render: (text, recordLog) => {
+          if (text) {
+            return (<span><Badge status="processing" />执行中</span>);
+          }
+          if (recordLog.success) {
+            return (<span><Badge status="success" />成功</span>);
+          }
+          return (<span><Badge status="error" />失败</span>);
+        },
+      },
+    ];
+    return (
+      <Table
+        columns={columns}
+        dataSource={taskJobLogMap[record.id]}
+        pagination={false}
+      />
+    );
+  }
+
   showEditForm = (id) => {
     const { dispatch, modelName } = this.props;
     // , formData
@@ -272,7 +331,7 @@ class TaskJobTable extends Component {
       {
         title: '任务名称',
         dataIndex: 'name',
-        width: '15%',
+        width: '20%',
         filterDropdown: (
           <div className="custom-filter-dropdown">
             <Input
@@ -300,6 +359,11 @@ class TaskJobTable extends Component {
           // .then(() => { console.log('thenthen'); });
         },
       },
+      // {
+      //   title: '编码',
+      //   dataIndex: 'taskJobKey',
+      //   width: '10%',
+      // },
       {
         title: '开始',
         dataIndex: 'startAt',
@@ -325,6 +389,9 @@ class TaskJobTable extends Component {
         dataIndex: 'inSchd',
         width: '10%',
         render: (text, record) => {
+          if (record.running) {
+            return (<span><Badge status="processing" />执行中</span>);
+          }
           if (text) {
             return (<span><Badge status="processing" />执行中</span>);
           }
@@ -334,36 +401,66 @@ class TaskJobTable extends Component {
           return (<span><Badge status="default" />未执行</span>);
         },
       },
+      // {
+      //   title: '是否激活',
+      //   dataIndex: 'active',
+      //   width: '5%',
+      //   render: (text) => {
+      //     if (text) {
+      //       return (<Tag color="green">已激活</Tag>);
+      //     }
+      //     return (<Tag>未激活</Tag>);
+      //   },
+      // },
       {
-        title: '是否激活',
-        dataIndex: 'active',
-        width: '5%',
-        render: (text) => {
-          if (text) {
-            return (<Tag color="green">已激活</Tag>);
-          }
-          return (<Tag>未激活</Tag>);
-        },
-      },
-      {
-        title: '创建时间',
-        dataIndex: 'createTime',
+        title: '下次执行时间',
+        dataIndex: 'taskState.nextFireTime',
         width: '15%',
       },
       {
         title: '操作',
         dataIndex: 'id',
         render: (text, record, index) => {
-          let actMenu = (<a>运行定时</a>);
+          let actMenu = (
+            <a
+              onClick={
+                () => {
+                  this.scheduleTaskJob(record.id);
+                }
+              }
+              role="button"
+              tabIndex={index}
+            >运行</a>);
           if (record.active) {
             // 已激活,任务中
-            if (record.inSchd) {
-              // 停止功能
-              actMenu = (<a>停止定时</a>);
-            } else {
-              // 重新激活,这里需要先修改定时规则
-              actMenu = (<a>重新定时</a>);
-            }
+            // if (record.inSchd) {
+            // 停止功能
+            actMenu = (
+              <a
+                onClick={
+                  () => {
+                    this.unscheduleTaskJob(record.id);
+                  }
+                }
+                role="button"
+                tabIndex={index}
+              >
+              取消
+              </a>
+            );
+            // } else {
+            //   // 重新激活,这里需要先修改定时规则
+            //   actMenu = (
+            //     <a
+            //       onClick={
+            //         () => {
+            //           this.rescheduleTaskJob(record.id);
+            //         }
+            //       }
+            //       role="button"
+            //       tabIndex={index}
+            //     >重新定时</a>);
+            // }
           }
           const menu = (
             <Menu>
@@ -378,8 +475,8 @@ class TaskJobTable extends Component {
 
           return (
             <Dropdown overlay={menu}>
-              <a className="ant-dropdown-link" href="#">
-               Hover me <Icon type="down" />
+              <a className="ant-dropdown-link">
+               操作 <Icon type="down" />
               </a>
             </Dropdown>
           );
@@ -419,6 +516,8 @@ class TaskJobTable extends Component {
           onChange={this.handleTableChange}
           loading={loading}
           pagination={pagination}
+          onExpand={this.openExpand}
+          expandedRowRender={this.expandedRowRender}
         />
         <TaskJobForm
           ref={(ele) => { this.form = ele; }}
@@ -430,18 +529,5 @@ class TaskJobTable extends Component {
   }
 }
 
-
-function mapStateToProps(state) {
-  return { ...state.taskJob };
-  // return {
-  //   pageData: state.taskJob ? state.taskJob.pageData : [],
-  //   formData: state.taskJob ? state.taskJob.formData : {},
-  //   loading: state.taskJob ? state.taskJob.loading : false,
-  //   pagination: state.taskJob ? state.pagination : null,
-  //   showForm: state.taskJob ? state.taskJob.showForm : false,
-  //   searchText: state.taskJob ? state.taskJob.searchText : '',
-  //   filtered: state.taskJob ? state.taskJob.filtered : false,
-  //   colDropFilter: state.taskJob ? state.taskJob.colDropFilter : false,
-  // };
-}
-export default connect(mapStateToProps)(TaskJobTable);
+export default connect(state =>
+  ({ ...state.taskJob, taskJobLogMap: state.taskJobLog.taskJobLogMap }))(TaskJobTable);

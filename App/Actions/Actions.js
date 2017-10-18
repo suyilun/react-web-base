@@ -1,11 +1,10 @@
 import axios from 'axios';
 import _ from 'lodash';
-import Promise from 'Promise';
+// import Promise from 'Promise';
 import ActionTypes from './ActionTypes';
 import Console from '../Console/Console';
 
 const ctxPath = '/api';
-
 
 export function addTodo(text) {
   return { type: ActionTypes.ADD_TODO, text };
@@ -157,6 +156,52 @@ export function createTaskJobEnumsAction() {
 }
 
 
+export function unscheduleTaskJobAction(id, pageWeb = {}) {
+  return (dispatch) => {
+    axios.get(`${ctxPath}/job/TaskJob/unscheduleTaskJobId`, { responseType: 'json', params: { id } })
+      .then((response) => {
+        const taskJob = response.data;
+        if (taskJob.active === false) {
+          dispatch(createPageModelAction('TaskJob', pageWeb));
+          alert('取消成功');
+        } else {
+          alert('出错');
+        }
+      }).catch((error) => {
+        throw error;
+      });
+  };
+}
+
+export function scheduleTaskJobAction(id, pageWeb = {}) {
+  return (dispatch) => {
+    axios.get(`${ctxPath}/job/TaskJob/scheduleTaskJobId`, { responseType: 'json', params: { id } })
+      .then((response) => {
+        const taskJob = response.data;
+        if (taskJob.active) {
+          dispatch(createPageModelAction('TaskJob', pageWeb));
+          alert('运行成功');
+        } else {
+          alert('出错');
+        }
+      }).catch((error) => {
+        throw error;
+      });
+  };
+}
+
 export function defauleDispatcher() {
   Console.error('默认dispatch');
+}
+
+// taskJobLog action
+
+export function latestTaskJobLogAction(taskJobId) {
+  return (dispatch) => {
+    axios.get(`${ctxPath}/job/TaskJobLog/latestLog`, { responseType: 'json', params: { taskJobId } })
+      .then((response) => {
+        dispatch({ type: ActionTypes.LATESTLOG_TASKJOBLOG,
+          actionData: { [taskJobId]: response.data } });
+      });
+  };
 }

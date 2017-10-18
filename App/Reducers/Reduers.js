@@ -57,7 +57,7 @@ function taskJob(state = {
   colDropFilter: false,
   loading: true,
   pageData: { list: [] } }, action) {
-  Console.log("taskJob's action:%o,state:%o", action, state);
+//  Console.log("taskJob's action:%o,state:%o", action, state);
   switch (action.type) {
     case ActionTypes.PAGE_TASKJOB:
     case ActionTypes.OPEN_TASKJOB:
@@ -77,5 +77,37 @@ function taskJob(state = {
   }
 }
 
+
+function taskJobLog(state = {
+  ...themeSize,
+  searchText: '',
+  filtered: false,
+  colDropFilter: false,
+  loading: true,
+  modelName: 'TaskJobLog',
+  pageData: { list: [] },
+  taskJobLogMap: {} }, action) {
+  // Console.log("taskJob's action:%o,state:%o", action, state);
+  switch (action.type) {
+    case ActionTypes.PAGE_TASKJOBLOG:
+    case ActionTypes.OPEN_TASKJOBLOG:
+    case ActionTypes.CANCEL_TASKJOBLOG:
+    case ActionTypes.RESET_TASKJOBLOG:
+    case ActionTypes.OPEN_SEARCH_COL_TASKJOBLOG:
+    case ActionTypes.CHANGE_SEARCH_COL_TASKJOBLOG:
+    case ActionTypes.GET_TASKJOBLOG:
+      return {
+        ...state,
+        ...action.actionData,
+      };
+    case ActionTypes.LATESTLOG_TASKJOBLOG:
+      //  taskJobLogMap[action.actionData]
+      console.log({ taskJobLogMap: { ...action.actionData } })
+      return { taskJobLogMap: { ...action.actionData } };
+    default:
+      return { ...state };
+  }
+}
+
 //  这边可以使用expect 做单元测试
-export default combineReducers({ todos, counter, users, AdminLayout, taskJob });
+export default combineReducers({ todos, counter, users, AdminLayout, taskJob, taskJobLog });

@@ -6,7 +6,7 @@ import * as Actions from '../../Actions/Actions';
 
 const Demo1 = ({ count, onIncrement, onDecrement }) => (
   <div>
-    计数示例：{count}
+    计数示例1：{count}
     <button onClick={onIncrement}>+</button>
     <button onClick={onDecrement}>-</button>
   </div>

@@ -5,8 +5,8 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import AdminSideMenu from './AdminSideMenu';
 import HeaderMenu from './HeaderMenu';
-import TaskJobEditor from '../Component/TaskJob/TaskJobEditor';
 import TaskJob from '../Component/TaskJob/TaskJob';
+import TaskJobLog from '../Component/TaskJobLog/TaskJobLog';
 import Home from '../Component/Home/Home';
 import Ide from '../Component/Ide/Ide';
 import * as Actions from '../Actions/Actions';
@@ -15,13 +15,13 @@ const { Header, Content, Sider } = Layout;
 
 const Apps = () => (<div>Apps</div>);
 
-const breadcrumbNameMap = {
-  '/apps': 'Application List',
-  '/apps/1': 'Application1',
-  '/apps/2': 'Application2',
-  '/apps/1/detail': 'Detail',
-  '/apps/2/detail': 'Detail',
-};
+// const breadcrumbNameMap = {
+//   '/apps': 'Application List',
+//   '/apps/1': 'Application1',
+//   '/apps/2': 'Application2',
+//   '/apps/1/detail': 'Detail',
+//   '/apps/2/detail': 'Detail',
+// };
 
 // 默认头，底样式，待补充
 class AdminLayout extends React.Component {
@@ -69,8 +69,10 @@ class AdminLayout extends React.Component {
             </Breadcrumb.Item>
             <Switch>
               <Route path="/apps" component={Apps} />
+              <Route path="/Ide" component={Ide} />
               <Route path="/TaskJob" component={TaskJob} />
-              <Route render={() => <div>Home Page Test </div>} />
+              <Route path="/TaskJobLog" component={TaskJobLog} />
+              <Route render={() => (<Home />)} />
             </Switch>
           </Content>
         </Layout>
